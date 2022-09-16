@@ -80,59 +80,60 @@ def create_header(token):
     }
     return headers
 
-# Parse command line arguments
-parser = argparse.ArgumentParser(description='Queries Google\'s TTS API for voice lines')
-parser.add_argument('input', type=str, help='TTS input text')
-parser.add_argument('model', type=str, help='TTS voice model')
-parser.add_argument('output', type=str, help='Name of output audio file')
-parser.add_argument('-v', '--voice', type=str, help='Filepath to template directory')
-args = parser.parse_args()
-inp = args.input
-voice = args.voice
-model = args.model
-output = args.output
+def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Queries Google\'s TTS API for voice lines')
+    parser.add_argument('input', type=str, help='TTS input text')
+    parser.add_argument('model', type=str, help='TTS voice model')
+    parser.add_argument('output', type=str, help='Name of output audio file')
+    parser.add_argument('-v', '--voice', type=str, help='Filepath to template directory')
+    args = parser.parse_args()
+    inp = args.input
+    voice = args.voice
+    model = args.model
+    output = args.output
 
-# Get the token
-cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
-cfg = toml.loads(read_file(str(cfgfp)))
-token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
+    # Get the token
+    cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
+    cfg = toml.loads(read_file(str(cfgfp)))
+    token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
 
-# If the sound already exists in our configured sound_directories,
-soundsfp: list[str] = cfg['config']['sound_directories']
-sounds = []
-for fp in soundsfp:
-    sounds.append(collect_files(expand(fp)))
+    # If the sound already exists in our configured sound_directories,
+    soundsfp: list[str] = cfg['config']['sound_directories']
+    sounds = []
+    for fp in soundsfp:
+        sounds.append(collect_files(expand(fp)))
 
-logger.info('Found Sounds:')
-logger.debug(sounds)
+    logger.info('Found Sounds:')
+    logger.debug(sounds)
 
-# Then only display the path to it, and exit
-for sound_dir in sounds:
-    for sp in sound_dir:
-        if pathlib.Path(expand(sp)).stem == inp:
-            print(sp)
-            sys.exit(0)
+    # Then only display the path to it, and exit
+    for sound_dir in sounds:
+        for sp in sound_dir:
+            if pathlib.Path(expand(sp)).stem == inp:
+                print(sp)
+                sys.exit(0)
 
-# Send TTS API reuqest
-json_request = create_json_input(inp, voice, model)
-logger.info(f'Request JSON')
-logger.debug(json_request)
+    # Send TTS API reuqest
+    json_request = create_json_input(inp, voice, model)
+    logger.info(f'Request JSON')
+    logger.debug(json_request)
 
-request_headers = create_header(token)
-logger.info(f'Request Headers')
-logger.debug(request_headers)
+    request_headers = create_header(token)
+    logger.info(f'Request Headers')
+    logger.debug(request_headers)
 
-r = requests.post(GOOGLE_APIS_TTS_URL, json=json_request, headers=request_headers)
-json_response =json.loads(r.content)
-logger.info(f'Response')
-logger.debug(json_response)
+    r = requests.post(GOOGLE_APIS_TTS_URL, json=json_request, headers=request_headers)
+    json_response =json.loads(r.content)
+    logger.info(f'Response')
+    logger.debug(json_response)
 
-if (r is None) or (r.status_code != 200):
-    sys.exit(1)
+    if (r is None) or (r.status_code != 200):
+        sys.exit(1)
 
-# Extract data into file 
-contents = base64.decodebytes(r.content)
+    # Extract data into file 
+    contents = base64.decodebytes(r.content)
 
-# Write file to disk
-with open(output, 'wb') as f:
-    f.write(contents)
+    # Write file to disk
+    with open(output, 'wb') as f:
+        f.write(contents)
