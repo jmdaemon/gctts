@@ -11,21 +11,36 @@ DEFAULT_AUDIO_ENCODING = 'MP3'
 
 # TTS API functions
 def create_json_input(inp, voice, model):
-    data = {}
-    data['input'] = {}
-    data['input']['text'] = inp
+    data = {
+        'input': {
+            'text': inp
+        },
+        'voice': {
+            'languageCode': voice,
+            'name': fmt_model(voice, model),
+            'ssmlGender': 'FEMALE'
+        },
+        'audioConfig': {
+            'audioEncoding': DEFAULT_AUDIO_ENCODING
+        }
+    }
 
-    data['voice'] = {}
-    data['voice']['languageCode'] = voice
-    # data['voice'][f'{voice}-Wavenet-B'] = voice
-    # data['voice'][f'{voice}-{model}'] = voice
-    data['voice']['name'] = fmt_model(voice, model)
-    data['voice']['ssmlGender'] = 'FEMALE'
+    # data = {}
+    # data['input'] = {}
+    # data['input']['text'] = inp
 
-    data['audioConfig'] = {}
-    data['audioConfig']['audioEncoding'] = DEFAULT_AUDIO_ENCODING
+    # data['voice'] = {}
+    # data['voice']['languageCode'] = voice
+    # # data['voice'][f'{voice}-Wavenet-B'] = voice
+    # # data['voice'][f'{voice}-{model}'] = voice
+    # data['voice']['name'] = fmt_model(voice, model)
+    # data['voice']['ssmlGender'] = 'FEMALE'
 
-    json_result = json.dumps(data)
+    # data['audioConfig'] = {}
+    # data['audioConfig']['audioEncoding'] = DEFAULT_AUDIO_ENCODING
+
+    # json_result = json.dumps(data)
+    json_result = data
     return json_result
 
 def fmt_model(voice, model):
@@ -83,6 +98,6 @@ contents = base64.decodebytes(r.content)
 # contents = r.content.decode(CHARSET)
 
 # Write file to disk
-# with open(output, 'wb') as f:
-with open(output, 'w') as f:
+with open(output, 'wb') as f:
+# with open(output, 'w') as f:
     f.write(contents)
