@@ -1,18 +1,19 @@
-import toml
-import json
-import argparse
+import toml, json, argparse, base64, sys, platform, pathlib, os
 import requests
-import base64
-import sys
-import platform
-import pathlib
 
-GOOGLE_APIS_TTS_URL = 'https://texttospeech.googleapis.com/v1/text:synthesize'
-CONFIG_WINDOWS = "%APPDATA%\TTS\config.toml"
-CONFIG_LINUX = "~/.config/tts/config.toml"
-CHARSET = 'utf-8'
-DEFAULT_AUDIO_ENCODING = 'MP3'
+# Global constants
+# For more information see:
+# https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize
+# https://cloud.google.com/text-to-speech/docs/voices 
+GOOGLE_APIS_TTS_URL     = 'https://texttospeech.googleapis.com/v1/text:synthesize'
+CONFIG_WINDOWS_DIR      = '%APPDATA%\\TTS'
+CONFIG_WINDOWS          = f'{CONFIG_WINDOWS_DIR}\\config.toml'
+CONFIG_LINUX_DIR        = '~/.config/tts'
+CONFIG_LINUX            = f'{CONFIG_LINUX_DIR}/config.toml'
+CHARSET                 = 'utf-8'
+DEFAULT_AUDIO_ENCODING  = 'MP3'
 
+# Helper Functions
 def is_windows():
     return any(platform.win32_ver())
 
@@ -25,6 +26,21 @@ def read_file(fname: str) -> str:
     res = file.read()
     file.close()
     return res
+
+def collect_files(rootdir):
+    ''' Recursively collects the names of every file in every subdirectory given a rootdir '''
+    files = []
+    for file in os.listdir(rootdir):
+        f = os.path.join(rootdir, file)
+        os.path.isfile(f)
+        files.append(f)
+        # subdir_files = []
+        if os.path.isdir(f):
+            # print(d)
+            # listdirs(f)
+            # subdir_files.append(collect_files(f))
+            files.append(collect_files(f))
+    return files
 
 is_win = is_windows()
 
@@ -71,10 +87,36 @@ voice = args.voice
 model = args.model
 output = args.output
 
-# TODO: Input check
+# Get the token
 cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
-cfg = toml.loads(read_file(cfgfp))
-token = cfg['config']['token']
+cfg = toml.loads(read_file(str(cfgfp)))
+token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
+
+# If the sound already exists in our configured sound_directories,
+soundsfp: list[str] = cfg['config']['sound_directories']
+sounds = []
+for fp in soundsfp:
+    sounds.append(collect_files(expand(fp)))
+
+print('Found Sounds:')
+print(sounds)
+# Then only display the path to it, and exit
+# for sound_dir in soundsfp:
+# for fp in soundsfp:
+for sound_dir in sounds:
+    # for fp in sound_dir:
+        # print(fp)
+    # print(fp)
+    # if pathlib.Path(expand(fp)).stem == inp:
+    # path = pathlib.Path(fp)
+    # if fp.stem == inp:
+    # print(path.name)
+    # if path.name == inp:
+    for sp in sound_dir:
+        # if sp.name == inp:
+        if pathlib.Path(expand(sp)).stem == inp:
+            print(sp)
+            sys.exit(0)
 
 # Send reuqest
 json_request = create_json_input(inp, voice, model)
