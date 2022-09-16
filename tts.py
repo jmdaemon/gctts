@@ -1,6 +1,15 @@
 import toml, json, argparse, base64, sys, platform, pathlib, os
 import requests
 
+# Setup logging
+from loguru import logger
+
+logger.remove() # Override default logger
+# Format: [2022-09-01 23:36:01.792] [DEBUG] [bin_name.main:150] Hello!
+PROGRAM_LOG_MSG_FORMAT = '\x1b[0m\x1b[32m[{time:YYYY-MM-DD HH:mm:ss.SSS}]\x1b[0m [<lvl>{level}</>] [<c>{name}:{line}</>] {message}'
+loglevel = 'ERROR' if os.environ.get('LOGLEVEL') is None else os.environ.get('LOGLEVEL')
+logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
+
 # Global constants
 # For more information see:
 # https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize
@@ -94,8 +103,8 @@ sounds = []
 for fp in soundsfp:
     sounds.append(collect_files(expand(fp)))
 
-print('Found Sounds:')
-print(sounds)
+logger.info('Found Sounds:')
+logger.debug(sounds)
 
 # Then only display the path to it, and exit
 for sound_dir in sounds:
@@ -106,14 +115,17 @@ for sound_dir in sounds:
 
 # Send TTS API reuqest
 json_request = create_json_input(inp, voice, model)
-print(f'Request JSON\n{json_request}')
+logger.info(f'Request JSON')
+logger.debug(json_request)
 
 request_headers = create_header(token)
-print(f'Request Headers\n{request_headers}')
+logger.info(f'Request Headers')
+logger.debug(request_headers)
 
 r = requests.post(GOOGLE_APIS_TTS_URL, json=json_request, headers=request_headers)
 json_response =json.loads(r.content)
-print(f'Response\n{json_response}')
+logger.info(f'Response')
+logger.debug(json_response)
 
 if (r is None) or (r.status_code != 200):
     sys.exit(1)
