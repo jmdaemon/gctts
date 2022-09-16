@@ -34,11 +34,7 @@ def collect_files(rootdir):
         f = os.path.join(rootdir, file)
         os.path.isfile(f)
         files.append(f)
-        # subdir_files = []
         if os.path.isdir(f):
-            # print(d)
-            # listdirs(f)
-            # subdir_files.append(collect_files(f))
             files.append(collect_files(f))
     return files
 
@@ -100,25 +96,15 @@ for fp in soundsfp:
 
 print('Found Sounds:')
 print(sounds)
+
 # Then only display the path to it, and exit
-# for sound_dir in soundsfp:
-# for fp in soundsfp:
 for sound_dir in sounds:
-    # for fp in sound_dir:
-        # print(fp)
-    # print(fp)
-    # if pathlib.Path(expand(fp)).stem == inp:
-    # path = pathlib.Path(fp)
-    # if fp.stem == inp:
-    # print(path.name)
-    # if path.name == inp:
     for sp in sound_dir:
-        # if sp.name == inp:
         if pathlib.Path(expand(sp)).stem == inp:
             print(sp)
             sys.exit(0)
 
-# Send reuqest
+# Send TTS API reuqest
 json_request = create_json_input(inp, voice, model)
 print(f'Request JSON\n{json_request}')
 
