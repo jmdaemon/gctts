@@ -53,7 +53,7 @@ def collect_files(rootdir):
 is_win = is_windows()
 
 # TTS API functions
-def create_json_input(inp, voice, model):
+def create_json_input(inp, voice, _format, model):
     data = {
         'input': {
             'text': inp
@@ -64,7 +64,7 @@ def create_json_input(inp, voice, model):
             'ssmlGender': 'FEMALE'
         },
         'audioConfig': {
-            'audioEncoding': DEFAULT_AUDIO_ENCODING
+            'audioEncoding': _format
         }
     }
     return data
@@ -90,11 +90,13 @@ def main():
     parser.add_argument('model', type=str, help='TTS voice model')
     parser.add_argument('output', type=str, help='Name of output audio file')
     parser.add_argument('-v', '--voice', type=str, help='Filepath to template directory')
+    parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
     args = parser.parse_args()
     inp = args.input
     voice = args.voice
     model = args.model
     output = args.output
+    _format = args.format if (args.format) else DEFAULT_AUDIO_ENCODING
 
     # Get the token
     cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
@@ -121,7 +123,7 @@ def main():
     # Send TTS API reuqest
 
     # Create json body
-    json_request = create_json_input(inp, voice, model)
+    json_request = create_json_input(inp, voice, _format, model)
     logger.info(f'Request JSON')
     logger.debug(json_request)
 
