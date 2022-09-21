@@ -1,5 +1,8 @@
-import toml, json, argparse, base64, sys, platform, pathlib, os
-import requests
+import json, argparse, base64, sys, platform, pathlib, os
+import requests, toml
+
+# tts.py
+# Requires: requests, loguru, toml
 
 # Setup logging
 from loguru import logger
@@ -15,8 +18,8 @@ logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
 # https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize
 # https://cloud.google.com/text-to-speech/docs/voices 
 GOOGLE_APIS_TTS_URL     = 'https://texttospeech.googleapis.com/v1/text:synthesize'
-CONFIG_WINDOWS_DIR      = '%APPDATA%\\TTS'
-CONFIG_WINDOWS          = f'{CONFIG_WINDOWS_DIR}\\config.toml'
+CONFIG_WINDOWS_DIR      = os.path.expandvars('%APPDATA%\TTS')
+CONFIG_WINDOWS          = f'{CONFIG_WINDOWS_DIR}\config.toml'
 CONFIG_LINUX_DIR        = '~/.config/tts'
 CONFIG_LINUX            = f'{CONFIG_LINUX_DIR}/config.toml'
 CHARSET                 = 'utf-8'
