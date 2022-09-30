@@ -7,11 +7,6 @@ import requests, toml
 # Setup logging
 from loguru import logger
 
-logger.remove() # Override default logger
-# Format: [2022-09-01 23:36:01.792] [DEBUG] [bin_name.main:150] Hello!
-PROGRAM_LOG_MSG_FORMAT = '\x1b[0m\x1b[32m[{time:YYYY-MM-DD HH:mm:ss.SSS}]\x1b[0m [<lvl>{level}</>] [<c>{name}:{line}</>] {message}'
-loglevel = 'ERROR' if os.environ.get('LOGLEVEL') is None else os.environ.get('LOGLEVEL')
-logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
 
 # Global constants
 # For more information see:
@@ -89,14 +84,35 @@ def main():
     parser.add_argument('input', type=str, help='TTS input text')
     parser.add_argument('model', type=str, help='TTS voice model')
     parser.add_argument('output', type=str, help='Name of output audio file')
-    parser.add_argument('-v', '--voice', type=str, help='Filepath to template directory')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Show debug information')
+    parser.add_argument('-s', '--sounds-dir', type=str, help='Path to sounds directory')
+    parser.add_argument('-l', '--language-code', type=str, help='Specify the voice to use')
     parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
     args = parser.parse_args()
+
     inp = args.input
-    voice = args.voice
     model = args.model
     output = args.output
+
+    voice = args.language_code
     _format = args.format if (args.format) else DEFAULT_AUDIO_ENCODING
+    verbose = args.verbose
+
+    # Setup logging
+    logger.remove() # Override default logger
+    # Format: [2022-09-01 23:36:01.792] [DEBUG] [bin_name.main:150] Hello!
+    PROGRAM_LOG_MSG_FORMAT = '\x1b[0m\x1b[32m[{time:YYYY-MM-DD HH:mm:ss.SSS}]\x1b[0m [<lvl>{level}</>] [<c>{name}:{line}</>] {message}'
+    loglevel = 'ERROR' if os.environ.get('LOGLEVEL') == None else os.environ.get('LOGLEVEL')
+    if (verbose):
+        loglevel = 'INFO'
+
+    logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
+
+    logger.debug(f'input: {inp}')
+    logger.debug(f'model: {model}')
+    logger.debug(f'output: {output}')
+    logger.debug(f'voice: {voice}')
+    logger.debug(f'_format: {_format}')
 
     # Get the token
     cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
