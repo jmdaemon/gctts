@@ -25,7 +25,7 @@ setup(
     scripts=[],
     entry_points={
         'console_scripts': [
-            'tts = tts:main',
+            'gctts = gctts:main',
         ],
     },
     test_suite='tests',
