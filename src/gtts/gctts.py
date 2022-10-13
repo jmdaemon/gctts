@@ -1,6 +1,7 @@
 # Imports
 from gtts.cli import build_cli
 from gtts.tts import (
+    CONFIG,
     GOOGLE_APIS_TTS_URL,
     CHARSET,
     DEFAULT_AUDIO_ENCODING,
@@ -13,7 +14,7 @@ from gtts.tts import (
 import json, base64, sys
 
 # Third Party Libraries
-import requests, toml
+import requests
 from loguru import logger
 
 # TTS API functions
@@ -51,7 +52,6 @@ def main():
     # Parse command line arguments
     parser = build_cli()
     parser.add_argument('model', type=str, help='TTS voice model')
-    parser.add_argument('-o', '--output', type=str, help='Name of output audio file')
     parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
     args = parser.parse_args()
 
@@ -74,7 +74,17 @@ def main():
     cfg = get_cfg()
     if cfg['config'].__contains__('voice'):
         voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
-    token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
+
+    token: str = ''
+    if cfg.__contains__('gctts'):
+        if cfg['gctts'].__contains__('token'):
+            token = cfg['gctts']['token']
+        else:
+            print(f'You must set a valid \'token\' in {CONFIG}')
+            sys.exit(1)
+    else:
+        print(f'You must define \'[gctts]\' table in {CONFIG}')
+        sys.exit(1)
 
     skip_cached_sounds(cfg, inp)
 

@@ -5,6 +5,14 @@ import os, platform, pathlib, sys, typing
 import toml
 from loguru import logger
 
+def is_windows():
+    return any(platform.win32_ver())
+
+def expand(path):
+    return pathlib.Path(path).expanduser()
+
+is_win = is_windows()
+
 # Global constants
 # For more information see:
 # https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize
@@ -14,15 +22,9 @@ CONFIG_WINDOWS_DIR      = os.path.expandvars('%APPDATA%\TTS')
 CONFIG_WINDOWS          = f'{CONFIG_WINDOWS_DIR}\config.toml'
 CONFIG_LINUX_DIR        = '~/.config/tts'
 CONFIG_LINUX            = f'{CONFIG_LINUX_DIR}/config.toml'
+CONFIG                  = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
 CHARSET                 = 'utf-8'
 DEFAULT_AUDIO_ENCODING  = 'MP3'
-
-# Helper Functions
-def is_windows():
-    return any(platform.win32_ver())
-
-def expand(path):
-    return pathlib.Path(path).expanduser()
 
 def read_file(fname: str) -> str:
     ''' Reads a file into a string '''
@@ -42,7 +44,6 @@ def collect_files(rootdir):
             files.append(collect_files(f))
     return files
 
-is_win = is_windows()
 
 def setup_logger(verbose: bool = False):
     # Setup logging
@@ -56,11 +57,8 @@ def setup_logger(verbose: bool = False):
     logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
 
 def get_cfg():
-    cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
-    cfg = toml.loads(read_file(str(cfgfp)))
+    cfg = toml.loads(read_file(str(CONFIG)))
     return cfg
-
-# TTS 
 
 # TODO:
 # Features that might be useful to add for this function are:

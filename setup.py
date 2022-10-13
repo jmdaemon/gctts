@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="gctts",
-    version="0.6.1",
+    version="0.7.0",
     license='MIT',
     author="Joseph Diza",
     author_email="josephm.diza@gmail.com",
