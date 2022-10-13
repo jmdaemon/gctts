@@ -68,14 +68,14 @@ def main():
         output_file = f'{output}-test.wav'
         if is_win:
             if volume:
-                subprocess.run([f'msound.ps1', f'-v {volume}', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
+                subprocess.run(['powershell.exe -ExecutionPolicy RemoteSigned -file "msound.ps1"', f'-v {volume}', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
             else:
-                subprocess.run([f'msound.ps1', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
+                subprocess.run(['powershell.exe -ExecutionPolicy RemoteSigned -file "msound.ps1"', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
         else:
             if volume:
-                subprocess.run([f'msound', output, output_file, volume], stdout=sys.stdout)
+                subprocess.run(['msound', output, output_file, volume], stdout=sys.stdout)
             else:
-                subprocess.run([f'msound', output, output_file], stdout=sys.stdout)
+                subprocess.run(['msound', output, output_file], stdout=sys.stdout)
 
         # Replace old file
         if volume:
