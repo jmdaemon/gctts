@@ -28,6 +28,7 @@ def main():
     # Parse command line arguments
     parser = build_cli()
     parser.add_argument('-r', '--re-encode', action='store_true', help='Specify the voice to use')
+    parser.add_argument('-vol', '--volume', type=str, help='Specify the voice to use')
     args = parser.parse_args()
 
     inp = args.input
@@ -35,6 +36,7 @@ def main():
     voice = args.language_code if args.language_code else 'ja-JP'
     verbose = args.verbose
     reencode = args.re_encode
+    volume = args.volume
 
     setup_logger(verbose)
     logger.debug(f'input: {inp}')
@@ -65,10 +67,21 @@ def main():
     if reencode:
         output_file = f'{output}-test.wav'
         if is_win:
-            subprocess.run([f'msound.ps1', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
+            if volume:
+                subprocess.run([f'msound.ps1', f'-v {volume}', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
+            else:
+                subprocess.run([f'msound.ps1', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
         else:
-            subprocess.run([f'msound', output, output_file], stdout=sys.stdout)
+            if volume:
+                subprocess.run([f'msound', output, output_file, volume], stdout=sys.stdout)
+            else:
+                subprocess.run([f'msound', output, output_file], stdout=sys.stdout)
 
         # Replace old file
-        os.remove(output)
-        os.rename(output_file, output)
+        if volume:
+            stem = os.path.basename(output).split('.')[0]
+            os.rename(output_file, f'{stem}-{volume}.wav')
+            os.remove(output)
+        else:
+            os.remove(output)
+            os.rename(output_file, output)
