@@ -1,12 +1,14 @@
-import json, argparse, base64, sys, platform, pathlib, os
-import requests, toml
+# Imports
+from gtts.cli import build_cli
 
-# tts.py
-# Requires: requests, loguru, toml
+# Standard Library
+import json, base64, sys, platform, pathlib, os
+
+# Third Party Libraries
+import requests, toml
 
 # Setup logging
 from loguru import logger
-
 
 # Global constants
 # For more information see:
@@ -80,14 +82,7 @@ def create_header(token):
 
 def main():
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Queries Google\'s TTS API for voice lines')
-    parser.add_argument('input', type=str, help='TTS input text')
-    parser.add_argument('model', type=str, help='TTS voice model')
-    parser.add_argument('output', type=str, help='Name of output audio file')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Show debug information')
-    parser.add_argument('-s', '--sounds-dir', type=str, help='Path to sounds directory')
-    parser.add_argument('-l', '--language-code', type=str, help='Specify the voice to use')
-    parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
+    parser = build_cli()
     args = parser.parse_args()
 
     inp = args.input
