@@ -27,7 +27,7 @@ def main():
     args = parser.parse_args()
 
     inp = args.input
-    output = args.output
+    output = args.output if args.output else f'{inp}.wav'
     voice = args.language_code
     verbose = args.verbose
 

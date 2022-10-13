@@ -51,12 +51,13 @@ def main():
     # Parse command line arguments
     parser = build_cli()
     parser.add_argument('model', type=str, help='TTS voice model')
+    parser.add_argument('-o', '--output', type=str, help='Name of output audio file')
     parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
     args = parser.parse_args()
 
     inp = args.input
     model = args.model
-    output = args.output
+    output = args.output if args.output else f'{inp}.{DEFAULT_AUDIO_ENCODING}'
 
     voice = args.language_code
     _format = args.format if (args.format) else DEFAULT_AUDIO_ENCODING
