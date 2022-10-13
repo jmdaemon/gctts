@@ -1,4 +1,4 @@
-import os, platform, pathlib, sys
+import os, platform, pathlib, sys, typing
 from loguru import logger
 
 # Global constants
@@ -50,3 +50,31 @@ def setup_logger(verbose: bool = False):
         loglevel = 'INFO'
 
     logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
+
+# TTS 
+
+# TODO:
+# Features that might be useful to add for this function are:
+# - Displaying urls of cached sounds instead, or skipping sounds
+# that have been cached in a separate `sounds_cached` attribute.
+# - A cli option to ignore cached sounds and call the tts anyways
+def skip_cached_sounds(cfg: dict[str, typing.Any], inp: str):
+    ''' If a sound has already been created & cached,
+    display the filepath to the file instead.
+    '''
+    # If the sound already exists in our configured sound_directories,
+    if cfg['config'].__contains__('sound_directories'):
+        soundsfp: list[str] = cfg['config']['sound_directories']
+        sounds = []
+        for fp in soundsfp:
+            sounds.append(collect_files(expand(fp)))
+
+        logger.info('Found Sounds:')
+        logger.debug(sounds)
+
+        # Then only display the path to it, and exit
+        for sound_dir in sounds:
+            for sp in sound_dir:
+                if pathlib.Path(expand(sp)).stem == inp:
+                    print(sp)
+                    sys.exit(0)

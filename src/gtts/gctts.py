@@ -66,22 +66,7 @@ def main():
     cfg = toml.loads(read_file(str(cfgfp)))
     token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
 
-    # If the sound already exists in our configured sound_directories,
-    if cfg['config'].__contains__('sound_directories'):
-        soundsfp: list[str] = cfg['config']['sound_directories']
-        sounds = []
-        for fp in soundsfp:
-            sounds.append(collect_files(expand(fp)))
-
-        logger.info('Found Sounds:')
-        logger.debug(sounds)
-
-        # Then only display the path to it, and exit
-        for sound_dir in sounds:
-            for sp in sound_dir:
-                if pathlib.Path(expand(sp)).stem == inp:
-                    print(sp)
-                    sys.exit(0)
+    skip_cached_sounds(cfg, inp)
 
     # Send TTS API reuqest
 
