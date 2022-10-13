@@ -1,4 +1,8 @@
+# Standard Library
 import os, platform, pathlib, sys, typing
+
+# Third Party Libraries
+import toml
 from loguru import logger
 
 # Global constants
@@ -50,6 +54,11 @@ def setup_logger(verbose: bool = False):
         loglevel = 'INFO'
 
     logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
+
+def get_cfg():
+    cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
+    cfg = toml.loads(read_file(str(cfgfp)))
+    return cfg
 
 # TTS 
 
