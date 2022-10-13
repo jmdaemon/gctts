@@ -1,9 +1,21 @@
 # Imports
 from gtts.cli import build_cli
-from gtts.tts import *
+from gtts.tts import (
+    GOOGLE_APIS_TTS_URL,
+    CONFIG_WINDOWS,
+    CONFIG_LINUX,
+    CHARSET,
+    DEFAULT_AUDIO_ENCODING,
+    is_win,
+    setup_logger,
+    expand,
+    read_file,
+    skip_cached_sounds,
+)
+# from gtts.tts import *
 
 # Standard Library
-import json, base64, sys, pathlib
+import json, base64, sys
 
 # Third Party Libraries
 import requests, toml
@@ -68,8 +80,6 @@ def main():
 
     skip_cached_sounds(cfg, inp)
 
-    # Send TTS API reuqest
-
     # Create json body
     json_request = create_json_input(inp, voice, _format, model)
     logger.info(f'Request JSON')
@@ -80,7 +90,7 @@ def main():
     logger.info(f'Request Headers')
     logger.debug(request_headers)
 
-    # Send request
+    # Send TTS API reuqest
     r = requests.post(GOOGLE_APIS_TTS_URL, json=json_request, headers=request_headers)
     json_response =json.loads(r.content)
     logger.info(f'Response')
