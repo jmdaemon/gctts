@@ -66,13 +66,13 @@ def main():
 
     if reencode:
         output_file = f'{output}-test.wav'
+        if os.path.exists(output_file):
+            os.remove(output_file)
         if is_win:
             if volume:
-                # subprocess.run(['powershell.exe', '-ExecutionPolicy RemoteSigned -file msound.ps1', f'-v {volume}', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
-                # p = subprocess.Popen(f'powershell.exe -ExecutionPolicy RemoteSigned -file msound.ps1 -v {volume} -i {output} -o {output_file}', stdout=sys.stdout)
-                subprocess.run(['powershell.exe', '-file msound.ps1', f'-v {volume}', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
+                subprocess.run(['powershell.exe', 'msound.ps1', f'-v {volume}', f'-i \"{output}\"', f'-o \"{output_file}\"'], stdout=sys.stdout)
             else:
-                subprocess.run(['powershell.exe', '-ExecutionPolicy RemoteSigned -file msound.ps1', f'-i {output}', f'-o {output_file}'], stdout=sys.stdout)
+                subprocess.run(['powershell.exe', 'msound.ps1', f'-i \"{output}\"', f'-o \"{output_file}\"'], stdout=sys.stdout)
         else:
             if volume:
                 subprocess.run(['msound', output, output_file, volume], stdout=sys.stdout)
@@ -81,6 +81,7 @@ def main():
 
         # Replace old file
         if volume:
+            os.remove(output)
             stem = os.path.basename(output).split('.')[0]
             os.rename(output_file, f'{stem}-{volume}.wav')
         else:
