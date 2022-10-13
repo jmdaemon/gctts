@@ -28,7 +28,7 @@ def main():
 
     inp = args.input
     output = args.output if args.output else f'{inp}.wav'
-    voice = args.language_code
+    voice = args.language_code if args.language_code else 'ja-JP'
     verbose = args.verbose
 
     setup_logger(verbose)
@@ -37,6 +37,7 @@ def main():
     logger.debug(f'voice: {voice}')
 
     cfg = get_cfg()
+    voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
     skip_cached_sounds(cfg, inp)
     query = GOOGLE_TTS_QUERY.format(
         tts_url=GOOGLE_TTS_URL,

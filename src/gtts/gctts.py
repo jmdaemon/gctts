@@ -59,7 +59,7 @@ def main():
     model = args.model
     output = args.output if args.output else f'{inp}.{DEFAULT_AUDIO_ENCODING}'
 
-    voice = args.language_code
+    voice = args.language_code if args.language_code else 'ja-JP'
     _format = args.format if (args.format) else DEFAULT_AUDIO_ENCODING
     verbose = args.verbose
 
@@ -72,6 +72,7 @@ def main():
     logger.debug(f'_format: {_format}')
 
     cfg = get_cfg()
+    voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
     token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
 
     skip_cached_sounds(cfg, inp)
