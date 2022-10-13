@@ -1,4 +1,3 @@
-# TODO: Make entire file optional
 # # The entire config file is optional, and is mainly only used to 
 # # specify options that you don't want to specify at runtime.
 # [config]

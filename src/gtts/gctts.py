@@ -11,7 +11,7 @@ from gtts.tts import (
 )
 
 # Standard Library
-import json, base64, sys
+import json, base64, sys, os
 
 # Third Party Libraries
 import requests
@@ -71,22 +71,23 @@ def main():
     logger.debug(f'voice: {voice}')
     logger.debug(f'_format: {_format}')
 
-    cfg = get_cfg()
-    if cfg['config'].__contains__('voice'):
-        voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
-
     token: str = ''
-    if cfg.__contains__('gctts'):
-        if cfg['gctts'].__contains__('token'):
-            token = cfg['gctts']['token']
-        else:
-            print(f'You must set a valid \'token\' in {CONFIG}')
-            sys.exit(1)
-    else:
-        print(f'You must define \'[gctts]\' table in {CONFIG}')
-        sys.exit(1)
+    if os.path.exists(CONFIG):
+        cfg = get_cfg()
+        if cfg['config'].__contains__('voice'):
+            voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
 
-    skip_cached_sounds(cfg, inp)
+        if cfg.__contains__('gctts'):
+            if cfg['gctts'].__contains__('token'):
+                token = cfg['gctts']['token']
+            else:
+                print(f'You must set a valid \'token\' in {CONFIG}')
+                sys.exit(1)
+        else:
+            print(f'You must define \'[gctts]\' table in {CONFIG}')
+            sys.exit(1)
+
+        skip_cached_sounds(cfg, inp)
 
     # Create json body
     json_request = create_json_input(inp, voice, _format, model)
