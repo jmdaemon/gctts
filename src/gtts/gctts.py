@@ -80,6 +80,17 @@ def create_header(token):
     }
     return headers
 
+def setup_logger(verbose: bool = False):
+    # Setup logging
+    logger.remove() # Override default logger
+    # Format: [2022-09-01 23:36:01.792] [DEBUG] [bin_name.main:150] Hello!
+    PROGRAM_LOG_MSG_FORMAT = '\x1b[0m\x1b[32m[{time:YYYY-MM-DD HH:mm:ss.SSS}]\x1b[0m [<lvl>{level}</>] [<c>{name}:{line}</>] {message}'
+    loglevel = 'ERROR' if os.environ.get('LOGLEVEL') == None else os.environ.get('LOGLEVEL')
+    if (verbose):
+        loglevel = 'INFO'
+
+    logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
+
 def main():
     # Parse command line arguments
     parser = build_cli()
@@ -93,15 +104,7 @@ def main():
     _format = args.format if (args.format) else DEFAULT_AUDIO_ENCODING
     verbose = args.verbose
 
-    # Setup logging
-    logger.remove() # Override default logger
-    # Format: [2022-09-01 23:36:01.792] [DEBUG] [bin_name.main:150] Hello!
-    PROGRAM_LOG_MSG_FORMAT = '\x1b[0m\x1b[32m[{time:YYYY-MM-DD HH:mm:ss.SSS}]\x1b[0m [<lvl>{level}</>] [<c>{name}:{line}</>] {message}'
-    loglevel = 'ERROR' if os.environ.get('LOGLEVEL') == None else os.environ.get('LOGLEVEL')
-    if (verbose):
-        loglevel = 'INFO'
-
-    logger.add(sys.stdout, format=PROGRAM_LOG_MSG_FORMAT, level=loglevel)
+    setup_logger(verbose)
 
     logger.debug(f'input: {inp}')
     logger.debug(f'model: {model}')
