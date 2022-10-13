@@ -53,11 +53,13 @@ def main():
     parser = build_cli()
     parser.add_argument('model', type=str, help='TTS voice model')
     parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
+    parser.add_argument('-t', '--token', type=str, help='Specify the voice to use')
     args = parser.parse_args()
 
     inp = args.input
     model = args.model
     output = args.output if args.output else f'{inp}.{DEFAULT_AUDIO_ENCODING}'
+    token = args.token if args.token else ''
 
     voice = args.language_code if args.language_code else 'ja-JP'
     _format = args.format if (args.format) else DEFAULT_AUDIO_ENCODING
@@ -71,7 +73,6 @@ def main():
     logger.debug(f'voice: {voice}')
     logger.debug(f'_format: {_format}')
 
-    token: str = ''
     if os.path.exists(CONFIG):
         cfg = get_cfg()
         if cfg['config'].__contains__('voice'):
@@ -88,6 +89,11 @@ def main():
             sys.exit(1)
 
         skip_cached_sounds(cfg, inp)
+
+    if (token == ''):
+        print('No token available for gctts. Specify one with -t or --token.')
+        print('Or set \'token\' under [config] in {CONFIG}. See the example \'config.toml\' for details.')
+        sys.exit(1)
 
     # Create json body
     json_request = create_json_input(inp, voice, _format, model)
