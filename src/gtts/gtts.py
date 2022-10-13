@@ -37,7 +37,8 @@ def main():
     logger.debug(f'voice: {voice}')
 
     cfg = get_cfg()
-    voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
+    if cfg['config'].__contains__('voice'):
+        voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
     skip_cached_sounds(cfg, inp)
     query = GOOGLE_TTS_QUERY.format(
         tts_url=GOOGLE_TTS_URL,

@@ -72,7 +72,8 @@ def main():
     logger.debug(f'_format: {_format}')
 
     cfg = get_cfg()
-    voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
+    if cfg['config'].__contains__('voice'):
+        voice = cfg['config']['voice'] if cfg['config']['voice'] else voice
     token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
 
     skip_cached_sounds(cfg, inp)
