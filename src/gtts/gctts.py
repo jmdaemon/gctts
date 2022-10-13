@@ -50,6 +50,8 @@ def create_header(token):
 def main():
     # Parse command line arguments
     parser = build_cli()
+    parser.add_argument('model', type=str, help='TTS voice model')
+    parser.add_argument('-f', '--format', type=str, help='Specify the audio format. (Choices: [MP3, OGG_OPUS, LINEAR16])')
     args = parser.parse_args()
 
     inp = args.input

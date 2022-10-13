@@ -8,7 +8,7 @@ from gtts.tts import (
 )
 
 # Standard Library
-import sys, base64
+import sys
 
 # Third Party Libraries
 import requests
@@ -27,15 +27,12 @@ def main():
     args = parser.parse_args()
 
     inp = args.input
-    model = args.model
     output = args.output
     voice = args.language_code
-
     verbose = args.verbose
-    setup_logger(verbose)
 
+    setup_logger(verbose)
     logger.debug(f'input: {inp}')
-    logger.debug(f'model: {model}')
     logger.debug(f'output: {output}')
     logger.debug(f'voice: {voice}')
 
