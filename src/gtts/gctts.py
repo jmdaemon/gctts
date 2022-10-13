@@ -2,17 +2,12 @@
 from gtts.cli import build_cli
 from gtts.tts import (
     GOOGLE_APIS_TTS_URL,
-    CONFIG_WINDOWS,
-    CONFIG_LINUX,
     CHARSET,
     DEFAULT_AUDIO_ENCODING,
-    is_win,
+    get_cfg,
     setup_logger,
-    expand,
-    read_file,
     skip_cached_sounds,
 )
-# from gtts.tts import *
 
 # Standard Library
 import json, base64, sys
@@ -73,9 +68,7 @@ def main():
     logger.debug(f'voice: {voice}')
     logger.debug(f'_format: {_format}')
 
-    # Get the token
-    cfgfp = expand(CONFIG_LINUX) if not is_win else expand(CONFIG_WINDOWS)
-    cfg = toml.loads(read_file(str(cfgfp)))
+    cfg = get_cfg()
     token = cfg['config']['token'] # Note that this assumes there is a [config] token variable
 
     skip_cached_sounds(cfg, inp)
