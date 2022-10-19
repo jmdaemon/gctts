@@ -28,6 +28,7 @@ def main():
     # Parse command line arguments
     parser = build_cli()
     parser.add_argument('-r', '--re-encode', action='store_true', help='Specify the voice to use')
+    parser.add_argument('-d', '--dry-run', action='store_true', help='Dry run mode, outputs the valid tts url')
     parser.add_argument('-vol', '--volume', type=str, help='Specify the voice to use')
     args = parser.parse_args()
 
@@ -37,6 +38,7 @@ def main():
     verbose = args.verbose
     reencode = args.re_encode
     volume = args.volume
+    dryrun = args.dry_run
 
     setup_logger(verbose)
     logger.debug(f'input: {inp}')
@@ -55,6 +57,11 @@ def main():
         voice=voice,
         inp=inp)
     logger.debug(f'{query}')
+
+    if dryrun:
+        print(query)
+        return 0
+
     r = requests.get(query)
 
     if (r is None) or (r.status_code != 200):
