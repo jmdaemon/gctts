@@ -13,7 +13,7 @@ from gtts.tts import (
 import sys, os, subprocess
 
 # Third Party Libraries
-import requests
+import pyperclip, requests
 from loguru import logger
 
 GOOGLE_TTS_URL = 'https://translate.google.com/translate_tts'
@@ -29,7 +29,8 @@ def main():
     parser = build_cli()
     parser.add_argument('-r', '--re-encode', action='store_true', help='Specify the voice to use')
     parser.add_argument('-d', '--dry-run', action='store_true', help='Dry run mode, outputs the valid tts url')
-    parser.add_argument('-vol', '--volume', type=str, help='Specify the voice to use')
+    parser.add_argument('-c', '--copy', action='store_true', help='Copy tts url to clipboard')
+    parser.add_argument('-vol', '--volume', type=str, help='Adjusts volume of file after download. Requires external scripts (msound.ps1, msound)')
     args = parser.parse_args()
 
     inp = args.input
@@ -39,6 +40,7 @@ def main():
     reencode = args.re_encode
     volume = args.volume
     dryrun = args.dry_run
+    copy = args.copy
 
     setup_logger(verbose)
     logger.debug(f'input: {inp}')
@@ -57,6 +59,9 @@ def main():
         voice=voice,
         inp=inp)
     logger.debug(f'{query}')
+
+    if copy:
+        pyperclip.copy(query)
 
     if dryrun:
         print(query)

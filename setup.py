@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="gctts",
-    version="0.11.0",
+    version="0.12.0",
     license='MIT',
     author="Joseph Diza",
     author_email="josephm.diza@gmail.com",
@@ -22,7 +22,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     python_requires=">=3.6",
-    install_requires=['loguru', 'toml', 'requests'],
+    install_requires=['loguru', 'toml', 'requests', 'pyperclip'],
     scripts=[],
     entry_points={
         'console_scripts': [

@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 loguru = "*"
 gctts = {editable = true, path = "."}
+pyperclip = "*"
 
 [dev-packages]
 
